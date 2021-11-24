@@ -6,7 +6,10 @@ local Promise = require(Package.Dependencies.Promise)
 local Settings = require(Package.Constants.Settings)
 
 local function WaitForRobloxCooldown(Key)
-    return Promise.delay(math.clamp(os.clock() - Key._LastAction.Time, Settings.RobloxCallCooldown, math.huge) - (os.clock() - Key._LastAction.Time))
+	return Promise.delay(
+		math.clamp(os.clock() - Key._LastAction.Time, Settings.RobloxCallCooldown, math.huge)
+			- (os.clock() - Key._LastAction.Time)
+	)
 end
 
 return WaitForRobloxCooldown

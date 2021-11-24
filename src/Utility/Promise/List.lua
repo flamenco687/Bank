@@ -4,23 +4,23 @@
 ]]
 
 local function List(self, PromiseToList)
-    local Index = tostring(debug.info(2, "n"))
+	local Index = tostring(debug.info(2, "n"))
 
-    if not self._Promises[Index] then
-        self._Promises[Index] = {}
-    end
+	if not self._Promises[Index] then
+		self._Promises[Index] = {}
+	end
 
-    self._Promises[Index][PromiseToList] = {Promise = PromiseToList, Time = os.time()}
+	self._Promises[Index][PromiseToList] = { Promise = PromiseToList, Time = os.time() }
 
-    PromiseToList:finallyCall(function()
-        self._Promises[Index][PromiseToList] = nil
+	PromiseToList:finallyCall(function()
+		self._Promises[Index][PromiseToList] = nil
 
-        if #self._Promises[Index] <= 0 then
-            self._Promises[Index] = nil
-        end
-    end)
+		if #self._Promises[Index] <= 0 then
+			self._Promises[Index] = nil
+		end
+	end)
 
-    return PromiseToList
+	return PromiseToList
 end
 
 return List

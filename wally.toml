@@ -2,7 +2,7 @@
 name = "flamenco687/bank"
 description = "Lightweight data management module/wrapper for Roblox using DataStoreService"
 
-version = "1.0.6-beta"
+version = "1.0.7-beta"
 license = "MIT License"
 authors = ["flamenco687"]
 

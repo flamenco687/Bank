@@ -9,7 +9,7 @@ local Global = require(Package.Global)
 local SaveKeyWithUpdateAsync = require(Package.ServiceRequests.UpdateAsync.SaveKey)
 
 local Key = {
-    --[[
+	--[[
         _Name = Key,
         _UserIds = {},
         Metadata = {},
@@ -27,99 +27,105 @@ local Key = {
 Key.__index = Key
 
 function Key:_Set(Property: string, Value: any?)
-    Utility.SetProperty(self, Property, Value)
+	Utility.SetProperty(self, Property, Value)
 end
 
 function Key:RemoveUserIds(UserIds: table)
-    UserIds = type(UserIds) == "table" and UserIds or Error.new("UserIds must be a table")
+	UserIds = type(UserIds) == "table" and UserIds or Error.new("UserIds must be a table")
 
-    Utility.Await.PropertyValue(self, "_IsPending", false)
+	Utility.Await.PropertyValue(self, "_IsPending", false)
 
-    for Index = 1, #UserIds do
-        for Number = 1, #self._UserIds do
-            if self._UserIds[Number] == UserIds[Index] then
-                table.remove(self._UserIds, Number)
-            end
-        end
-    end
+	for Index = 1, #UserIds do
+		for Number = 1, #self._UserIds do
+			if self._UserIds[Number] == UserIds[Index] then
+				table.remove(self._UserIds, Number)
+			end
+		end
+	end
 end
 
 function Key:AddUserIds(UserIds: table)
-    UserIds = type(UserIds) == "table" and UserIds or Error.new("UserIds must be a table")
+	UserIds = type(UserIds) == "table" and UserIds or Error.new("UserIds must be a table")
 
-    return Utility.Promise.List(self, Utility.Await.PropertyValue(self, "_IsPending", false):andThen(function(Resolve)
-        self:_Set("_IsPending", true)
+	return Utility.Promise.List(
+		self,
+		Utility.Await.PropertyValue(self, "_IsPending", false):andThen(function(Resolve)
+			self:_Set("_IsPending", true)
 
-        for Index = 1, #UserIds do
-            table.insert(self._UserIds, UserIds[Index])
-        end
+			for Index = 1, #UserIds do
+				table.insert(self._UserIds, UserIds[Index])
+			end
 
-        self:_Set("_IsPending", false)
+			self:_Set("_IsPending", false)
 
-        Resolve()
-    end))
+			Resolve()
+		end)
+	)
 end
 
 function Key:Toggleautosave(Autosave: boolean)
-    if not Global.AutosaveEnabled then
-        return "Autosave is globally disabled"
-    end
+	if not Global.AutosaveEnabled then
+		return "Autosave is globally disabled"
+	end
 
-    if self._Store._AutosaveEnabled == false then
-        return "Autosave is disabled for Key's Store"
-    end
+	if self._Store._AutosaveEnabled == false then
+		return "Autosave is disabled for Key's Store"
+	end
 
-    Autosave = type(Autosave) == "boolean" and Autosave or Error.new("Autosave must be a boolean")
+	Autosave = type(Autosave) == "boolean" and Autosave or Error.new("Autosave must be a boolean")
 
-    if self._ShouldAutosave == Autosave then
-        return "Nothing changed"
-    end
+	if self._ShouldAutosave == Autosave then
+		return "Nothing changed"
+	end
 
-    return Utility.Promise.List(self, Promise.new(function(Resolve, _, OnCancel)
-        if Autosave == true then
-            Global.KeysToAutosave[self._Index] = self
-            self._ShouldAutosave = true
-        else
-            Global.KeysToAutosave[self._Index] = nil
-            self._ShouldAutosave = false
-        end
+	return Utility.Promise.List(
+		self,
+		Promise.new(function(Resolve, _, OnCancel)
+			if Autosave == true then
+				Global.KeysToAutosave[self._Index] = self
+				self._ShouldAutosave = true
+			else
+				Global.KeysToAutosave[self._Index] = nil
+				self._ShouldAutosave = false
+			end
 
-        Resolve("Autosave state succesfully changed")
+			Resolve("Autosave state succesfully changed")
 
-        OnCancel(function()
-            Global.KeysToAutosave[self._Index] = nil
-            self._ShouldAutosave = false
-        end)
-    end))
+			OnCancel(function()
+				Global.KeysToAutosave[self._Index] = nil
+				self._ShouldAutosave = false
+			end)
+		end)
+	)
 end
 
 function Key:Release(Options: table?)
-    Options = Options or {}
-    Options = type(Options) and Options or Error.new("Options must be a table")
+	Options = Options or {}
+	Options = type(Options) and Options or Error.new("Options must be a table")
 
-    local Store = self._Store
-    local MaxRetries = Options.MaxRetries or math.clamp((Settings.AssumeDeadSessionLock / 100), 50, 10^3)
+	local Store = self._Store
+	local MaxRetries = Options.MaxRetries or math.clamp((Settings.AssumeDeadSessionLock / 100), 50, 10 ^ 3)
 
-    if not Global.LoadedKeys[self._Index] then
-        return Promise.resolve(true)
-    end
+	if not Global.LoadedKeys[self._Index] then
+		return Promise.resolve(true)
+	end
 
-    Global.KeysToAutosave[self._Index] = nil
-    Global.LoadedKeys[self._Index] = nil
-    Store._LoadedKeys[self._Index] = nil
+	Global.KeysToAutosave[self._Index] = nil
+	Global.LoadedKeys[self._Index] = nil
+	Store._LoadedKeys[self._Index] = nil
 
-    return Promise.retry(SaveKeyWithUpdateAsync, MaxRetries, self, Options, true)
+	return Promise.retry(SaveKeyWithUpdateAsync, MaxRetries, self, Options, true)
 end
 
 function Key:Save(Options: table?)
-    Options = Options or {}
-    Options = type(Options) and Options or Error.new("Options must be a table")
+	Options = Options or {}
+	Options = type(Options) and Options or Error.new("Options must be a table")
 
-    return Promise.retry(SaveKeyWithUpdateAsync, Options.MaxRetries or math.huge, self, Options)
+	return Promise.retry(SaveKeyWithUpdateAsync, Options.MaxRetries or math.huge, self, Options)
 end
 
 function Key:Reconcile()
-    return TableUtil.Reconcile(self.Data.Proxy, self._Store._DataTemplate)
+	return TableUtil.Reconcile(self.Data.Proxy, self._Store._DataTemplate)
 end
 
 return Key

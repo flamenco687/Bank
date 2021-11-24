@@ -17,9 +17,9 @@ local function WaitForPropertyValue(self, DesiredProperty: string, DesiredValue:
 			end
 		end))
 
-        OnCancel(function()
-            self._Maid:End(Connection)
-        end)
+		OnCancel(function()
+			self._Maid:End(Connection)
+		end)
 	end)
 end
 
