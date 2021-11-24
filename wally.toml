@@ -1,0 +1,29 @@
+[package]
+name = "flamenco687/bank"
+description = "Lightweight data management module/wrapper for Roblox using DataStoreService"
+
+version = "1.0.6-beta"
+license = "MIT License"
+authors = ["flamenco687"]
+
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "server"
+
+exclude = [
+    "docs",
+    "Exclude", 
+    "roblox.toml",
+    "selene.toml",
+    "foreman.toml",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+]
+
+[dependencies]
+TableUtil = "sleitnick/table-util@^1"
+Signal = "sleitnick/signal@^1"
+Promise = "evaera/promise@^3"
+Proxy = "flamenco687/roblox-proxy@^2"
+Error = "flamenco687/error@^1"
+Maid = "flamenco687/maid@^1"

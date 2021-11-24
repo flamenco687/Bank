@@ -1,0 +1,25 @@
+[package]
+name = "flamenco687/roblox-proxy"
+description = "Roblox library to quickly throw out clean & detailed errors"
+
+version = "2.0.0"
+license = "MIT License"
+
+authors = ["flamenco687"]
+realm = "shared"
+
+registry = "https://github.com/UpliftGames/wally-index"
+
+exclude = [
+    "docs", 
+    "roblox.toml",
+    "selene.toml",
+    "foreman.toml",
+    "test.project.json",
+    "README.md",
+    "LICENSE"
+]
+
+[dependencies]
+Signal = "sleitnick/signal@^1"
+
